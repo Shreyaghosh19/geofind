@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Geolocation Tutorial</title>
+</head>
+
+<body>
+    <h1>My Location :</h1>
+    <p id="p"></p>
+    <button onclick="locate()">Click To Know Your Current Location</button>
+</body>
+<script src="js/jquery-3.6.0.min.js"></script>
+<script>
+        let p = document.getElementById("p");
+    function locate() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                showPosition, showError//higher order function
+            );
+        }
+        else {
+            p.innerHTML = "Not Supportive browser for geolocation";
+        }
+    }
+    function showPosition(dip) {
+        p.innerHTML = "Latitude is:" + dip.coords.latitude + "<br>" + "Longitude is:" + dip.coords.longitude;
+       //api:  https://api.opencagedata.com/geocode/v1/json?q=LAT+LNG&key=87f70e732bbd44d984f351fc57d3e4cc
+        var l = "https://api.opencagedata.com/geocode/v1/json?q=" + dip.coords.latitude + "," + dip.coords.longitude + "&key=87f70e732bbd44d984f351fc57d3e4cc"
+        // p.innerHTML=l;
+        $.get({
+            url: l,
+            success: function (data) {
+                console.log(data);
+              p.innerHTML = "Country:" + data.results[0].components.country + "<br>";
+               p.innerHTML += "Continent:" + data.results[0].components.continent + "<br>";
+               p.innerHTML += "State:" + data.results[0].components.state + "<br>";
+            }
+        })
+     
+    }
+
+
+    //error handling
+       // 0 - UNKNOWN_ERROR
+        // 1 - PERMISSION_DENIED
+        // 2- POSITION_UNAVAILABLE
+        // 3- TIMEOUT
+        function showError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    p.innerHTML = "user dont want to share location";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                   p.innerHTML = "user location is not available";
+                    break;
+                case error.TIMEOUT:
+                    p.innerHTML = "time out";
+                    break;
+                case error.UNKNOWN_ERROR:
+                   p.innerHTML = "something Wrong";
+                    break;
+
+                default:
+                    break;
+            }
+        }
+</script>
+
+</html>
